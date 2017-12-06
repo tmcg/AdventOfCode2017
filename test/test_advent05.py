@@ -20,3 +20,6 @@ class TestAdvent05(unittest.TestCase):
     t = Advent05()
     d = t.loadSampleData()
     self.assertEqual(t.getTrampolineResultExtra(d),28040648)
+
+  testResult.slow = True
+  testResultExtra.slow = True
