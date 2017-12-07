@@ -1,6 +1,6 @@
 
-from advent06 import Advent06
+from advent07 import Advent07
 
 if __name__=='__main__':
-  print(Advent06([0,2,7,0,9]).getReallocResult())
-  print(Advent06([0,2,7,0,9]).getReallocResultExtra())
+  t = Advent07(['a (10) -> b', 'b (10) -> c,d,e','c (20) -> f', 'd (30)', 'e (20) -> g', 'f (10)', 'g (9)'])
+  print(t.getTowerResultExtra())
