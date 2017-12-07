@@ -33,3 +33,5 @@ class TestAdvent01(unittest.TestCase):
     t = Advent01()
     d = t.loadSampleData()
     self.assertEqual(t.getInverseCaptchaResultExtra(d),1220)
+
+TestAdvent01.day1 = True

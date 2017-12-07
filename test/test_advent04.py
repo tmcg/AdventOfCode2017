@@ -27,3 +27,5 @@ class TestAdvent04(unittest.TestCase):
     t = Advent04()
     d = t.loadSampleData()
     self.assertEqual(t.getPassphraseResultExtra(d),251)
+
+TestAdvent04.day4 = True

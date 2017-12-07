@@ -22,3 +22,5 @@ class TestAdvent02(unittest.TestCase):
     t = Advent02()
     d = t.loadSampleData()
     self.assertEqual(t.getCheckSumResultExtra(d), 277)
+
+TestAdvent02.day2 = True

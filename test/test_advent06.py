@@ -53,3 +53,5 @@ class TestAdvent06(unittest.TestCase):
   def testResultExtra(self):
     t = Advent06()
     self.assertEqual(t.getReallocResultExtra(),8038)
+
+TestAdvent06.day6 = True

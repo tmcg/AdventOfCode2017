@@ -104,3 +104,5 @@ class TestAdvent03(unittest.TestCase):
   def testResultExtra(self):
     t = Advent03()
     self.assertEqual(t.getSpiralResultExtra(265149),266330)
+
+TestAdvent03.day3 = True

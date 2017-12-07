@@ -23,3 +23,5 @@ class TestAdvent05(unittest.TestCase):
 
   testResult.slow = True
   testResultExtra.slow = True
+
+TestAdvent05.day5 = True
