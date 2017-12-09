@@ -1,6 +1,6 @@
 
-from advent07 import Advent07
+from advent08 import Advent08
 
 if __name__=='__main__':
-  t = Advent07(['a (10) -> b', 'b (10) -> c,d,e','c (20) -> f', 'd (30)', 'e (20) -> g', 'f (10)', 'g (9)'])
-  print(t.getTowerResultExtra())
+  t = Advent08(['a inc 20 if a == 0','a dec 5 if a == 20'])
+  print(t.getRegisterResultExtra())
