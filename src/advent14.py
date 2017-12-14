@@ -54,21 +54,18 @@ class Advent14:
     grid = self.generateHashGrid(key)
     return sum([sum(row) for row in grid])
 
-  def exploreRegion(self, grid, x, y, nextGroup):
-    max_x = len(grid[y])
-    max_y = len(grid)
+  def exploreRegion(self, grid, x, y, xMax, yMax, nextGroup):
+    if y < 0 or y >= yMax or x < 0 or x >= xMax:
+      return 0 # out of bounds
+
     if grid[y][x] < 0:
       # square we haven't seen before
       grid[y][x] = nextGroup
       # recursively find all adjacent squares
-      if y > 0:
-        self.exploreRegion(grid, x, y-1, nextGroup) # search up
-      if y < max_y-1:
-        self.exploreRegion(grid, x, y+1, nextGroup) # search down
-      if x > 0:
-        self.exploreRegion(grid, x-1, y, nextGroup) # search left
-      if x < max_x-1:
-        self.exploreRegion(grid, x+1, y, nextGroup) # search right
+      self.exploreRegion(grid, x, y-1, xMax, yMax, nextGroup) # search up
+      self.exploreRegion(grid, x, y+1, xMax, yMax, nextGroup) # search down
+      self.exploreRegion(grid, x-1, y, xMax, yMax, nextGroup) # search left
+      self.exploreRegion(grid, x+1, y, xMax, yMax, nextGroup) # search right
       return 1
     return 0
 
@@ -81,7 +78,7 @@ class Advent14:
     nextGroup = 1
     for ty in range(0,len(grid)):
       for tx in range(0,len(grid[ty])):
-        increment = self.exploreRegion(grid, tx, ty, nextGroup)
+        increment = self.exploreRegion(grid, tx, ty, len(grid[ty]), len(grid), nextGroup)
         nextGroup += increment
         if self.debug and increment > 0:
           # a group was found, debug print
