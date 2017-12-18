@@ -16,8 +16,8 @@ class Machine:
     self.registers = {}
     self.instptr = 0
     self.program = self.decode(program)
-    self.currVal = 0
-    self.lastVal = 0
+    self.currVal = 0L
+    self.lastVal = 0L
     self.break1 = False
     self.blocked = False
     self.sendCount = 0
@@ -43,10 +43,10 @@ class Machine:
     try:
       return long(ref) # ref is a literal
     except:
-      return self.registers.get(ref,0) # ref is a register
+      return self.registers.get(ref,0L) # ref is a register
 
   def setVal(self, ref, val):
-    self.registers[ref] = val
+    self.registers[ref] = long(val)
 
   def fetch(self):
     if self.instptr < 0 or self.instptr >= len(self.program):
@@ -111,10 +111,9 @@ class Machine:
     elif inst.opcode == 'rcv':
       self.recv(inst)
     elif inst.opcode == 'jgz':
-      if self.getVal(inst.operand1) > 0:
-        self.instptr += self.getVal(inst.operand2)
-      else:
-        self.instptr += 1
+      op1 = self.getVal(inst.operand1)
+      op2 = self.getVal(inst.operand2)
+      self.instptr += op2 if op1 > 0 else 1
 
     return True
 
