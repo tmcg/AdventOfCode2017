@@ -2,6 +2,8 @@
 # Puzzle 18: Duet
 # http://adventofcode.com/2017/day/18
 
+from Queue import Queue
+
 class Instruction:
   def __init__(self, opcode, operand1 = None, operand2 = None):
     self.opcode = opcode
@@ -10,13 +12,21 @@ class Instruction:
 
 
 class Machine:
-  def __init__(self, program = []):
+  def __init__(self, program = [], pid = None, sendQ = None, recvQ = None):
     self.registers = {}
     self.instptr = 0
     self.program = self.decode(program)
-    self.currFreq = 0
-    self.lastFreq = 0
+    self.currVal = 0
+    self.lastVal = 0
     self.break1 = False
+    self.blocked = False
+    self.sendCount = 0
+    self.recvCount = 0
+    self.sendQ = sendQ
+    self.recvQ = recvQ
+    self.pid = pid
+    if pid != None:
+      self.setVal('p', pid)
 
   def decode(self, program):
     result = []
@@ -33,7 +43,7 @@ class Machine:
     try:
       return long(ref) # ref is a literal
     except:
-      return self.registers.get(ref,0L) # ref is a register
+      return self.registers.get(ref,0) # ref is a register
 
   def setVal(self, ref, val):
     self.registers[ref] = val
@@ -41,14 +51,37 @@ class Machine:
   def fetch(self):
     if self.instptr < 0 or self.instptr >= len(self.program):
       return None
-
     return self.program[self.instptr]
 
   def breakpoints(self, inst):
     if inst.opcode == 'rcv' and self.getVal(inst.operand1) != 0:
       self.break1 = True  # break for part 1
 
+  def send(self, inst):
+    self.currVal = self.getVal(inst.operand1)
+    self.sendCount += 1
+    self.instptr += 1
+
+    if self.sendQ != None:
+      self.sendQ.put(self.currVal)
+
+  def recv(self, inst):
+    if self.getVal(inst.operand1) != 0:
+        self.lastVal = self.currVal
+    self.recvCount += 1
+    self.instptr += 1
+
+    if self.recvQ != None:
+      if self.recvQ.empty():
+        self.blocked = True
+        self.instptr -= 1
+        return True  # blocked
+      else:
+        self.blocked = False
+        self.setVal(inst.operand1,self.recvQ.get())
+
   def step(self, inst = None):
+    # print('pid('+str(self.pid)+'),ip='+str(self.instptr)+',sends='+str(self.sendCount))
     if inst == None:
       inst = self.fetch()
 
@@ -74,12 +107,9 @@ class Machine:
         vx = vx % vy
       self.setVal(rx, vx)
     elif inst.opcode == 'snd':
-      self.instptr += 1
-      self.currFreq = self.getVal(inst.operand1)
+      self.send(inst)
     elif inst.opcode == 'rcv':
-      self.instptr += 1
-      if self.getVal(inst.operand1) != 0:
-        self.lastFreq = self.currFreq
+      self.recv(inst)
     elif inst.opcode == 'jgz':
       if self.getVal(inst.operand1) > 0:
         self.instptr += self.getVal(inst.operand2)
@@ -91,7 +121,8 @@ class Machine:
 
 class Advent18:
   def __init__(self, prog = None):
-    self.m1 = Machine(prog) if prog != None else Machine(self.loadSampleData())
+    self.m0 = Machine(prog,0) if prog != None else Machine(self.loadSampleData(),0)
+    self.m1 = Machine(prog,1) if prog != None else Machine(self.loadSampleData(),1)
 
   def loadSampleData(self):
     raw = open("./data/advent18.txt").read()
@@ -100,13 +131,28 @@ class Advent18:
   def getDuetResult(self):
     c = True
     while c:
-      c = self.m1.step()
-      if self.m1.break1:
-        return self.m1.lastFreq
+      c = self.m0.step()
+      if self.m0.break1:
+        return self.m0.lastVal
 
   def getDuetResultExtra(self):
-    return 0
+    q0 = Queue()
+    q1 = Queue()
+    self.m0.recvQ = q0
+    self.m1.recvQ = q1
+    self.m0.sendQ = q1
+    self.m1.sendQ = q0
 
+    progs = [self.m0,self.m1]
+    deadlock = False
+    while len(progs) > 0 and not deadlock:
+      c = progs[0].step()
+      if c == False:
+        progs.remove(progs[0])
+      deadlock = sum([1 if p.blocked else 0 for p in progs]) == len(progs)
+      progs.reverse()
+
+    return self.m1.sendCount
 
 if __name__=='__main__':
   print(Advent18().getDuetResult())
