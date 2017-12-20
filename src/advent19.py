@@ -1,5 +1,5 @@
 
-# Puzzle 19: Duet
+# Puzzle 19: A Series of Tubes
 # http://adventofcode.com/2017/day/19
 
 class Advent19:
